@@ -210,7 +210,10 @@ class Menu{
         }
         for (let i = 0; i<this.policyMenu_box.length; i++) {
             if (this.btnPressed(this.policyMenu_box[i])) {
-                this.settings.opPolicy = this.policyMenu_box[i].id;
+                if (this.settings.opPolicy != this.policyMenu_box[i].id) {
+                    this.settings.opPolicy = this.policyMenu_box[i].id;
+                    this.settings.opPolicy_new = true;
+                }
             }
         }
     }
