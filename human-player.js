@@ -31,6 +31,7 @@ class HumanPlayer {
             ((this.b.state[0] == this.b.state[1] && this.b.state[1] == this.b.state[2]) ||
             (this.b.state[0] == this.b.state[3] && this.b.state[3] == this.b.state[6]))) {
             this.b.winner = 'human';
+            return true;
         }
         else if (this.b.state[4] == this.settings.human &&
             ((this.b.state[0] == this.b.state[4] && this.b.state[4] == this.b.state[8]) ||
@@ -38,11 +39,16 @@ class HumanPlayer {
             (this.b.state[2] == this.b.state[4] && this.b.state[4] == this.b.state[6]) ||
             (this.b.state[3] == this.b.state[4] && this.b.state[4] == this.b.state[5]))) {
             this.b.winner = 'human';
+            return true;
         }
         else if (this.b.state[8] == this.settings.human &&
             ((this.b.state[8] == this.b.state[5] && this.b.state[5] == this.b.state[2]) ||
             (this.b.state[8] == this.b.state[7] && this.b.state[7] == this.b.state[6]))) {
             this.b.winner = 'human';
+            return true;
+        }
+        else {
+            return false;
         }
     }
     
@@ -188,8 +194,9 @@ class HumanPlayer {
                             this.b.state[i] = this.settings.human;
                             this.b.humanStones += 1;
                             this.mouseX, this.mouseY = 0;
-                            this.checkWin();
-                            this.nextTurn = true;
+                            if (!this.checkWin()) {
+                                this.nextTurn = true;
+                            }
                         }
                         // if there are 3 stones and a human stone is clicked clear old hints then show hints
                         else if (this.b.humanStones == 3 && this.b.state[i] == this.settings.human) {
@@ -205,8 +212,9 @@ class HumanPlayer {
                             this.clickedI = -1;
                             this.clearHints();
                             this.mouseX, this.mouseY = 0;
-                            this.checkWin();
-                            this.nextTurn = true;
+                            if (!this.checkWin()) {
+                                this.nextTurn = true;
+                            }
                         }
                     }
                 }

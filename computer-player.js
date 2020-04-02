@@ -4,7 +4,7 @@ class ComputerPlayer {
         this.context = options.context;
         this.settings = options.settings;
         this.settings.mctSim = 100;
-        this.settings.mctTimeLimit = 3;
+        this.settings.mctTimeLimit = 1000;
         this.b = options.b;
         this.size = options.size;
         this.image = options.image;
@@ -260,18 +260,55 @@ class ComputerPlayer {
         return 0;
     }
     
-    updateMct(thisMct, mct, path, win) {
+    updateMct(thisMct, path, win) {
         if (path.length == 0) {
             return 0;
         }else{
-            console.log('here');
             thisMct.visits += 1;
             thisMct.wins += win;
             let index = path.shift();
-            this.updateMct(mct.children[index], mct, path, win);
+            this.updateMct(thisMct.children[index], path, win);
         }
     }
-
+    
+    findNextMax(mct, target) {
+        var maxRatio = -1;
+        var maxIndex = false;
+        for (var i = 0; i < mct.children.length; i++) {
+            var ratio = mct.children[i].wins/mct.children[i].visits;
+            if (ratio < target && ratio > maxRatio) {
+                maxIndex = i;
+                maxRatio = ratio;
+            }
+        }
+        return maxIndex;
+    }
+    
+    selectNode(mct, path) {
+        if (mct.children.length == 0) {
+            if (this.checkWin(mct.board)) {
+                return [false, mct.wins/mct.visits];
+            }else{
+                mct = Object.assign({}, mct);
+                return [mct, path];
+            }
+        }else{
+            let maxIndex = this.findNextMax(mct, 1.1);
+            path.push(maxIndex);
+            var result = this.selectNode(mct.children[maxIndex], path);
+            while (!result[0]) {
+                path.pop();
+                let maxIndex = this.findNextMax(mct, result[1]);
+                if (!maxIndex) {
+                    return [false, mct.wins/mct.visits];
+                }
+                path.push(maxIndex);
+                result = this.selectNode(mct.children[maxIndex], path);
+            }
+            return result;
+        }
+    }
+    
     update() {
         if (this.b.turn == 'bot') {  
             if (this.settings.opPolicy == "Random") {
@@ -313,25 +350,20 @@ class ComputerPlayer {
             }else if (this.settings.opPolicy == "MCTS") {
                 let board = this.b.state.slice(0);
                 let temp = this.b.turn.slice(0);
-                this.mct = {board: board, turn: temp, visits: 1, wins: 0, children:[]};
+                this.mct = {board: board, turn: temp, visits: 1, wins: 0.5, children:[]};
                 const time = Date.now();
                 while ((Date.now() - time) < this.settings.mctTimeLimit) {
+                    
                     // Selection
-                    var mct = this.mct;
+                    var mct = Object.assign({}, this.mct);
                     var path = [];
-                    var turn = mct.turn;
-                    while (mct.children.length != 0){
-                        var max = 0;
-                        for (let i = 0; i < mct.children.length; i++) {
-                            if (mct.children[i].wins/mct.children[i].visits > 
-                                mct.children[max].wins/mct.children[max].visits) {
-                                max = i;
-                            }
-                        }
-                        path.push(max);
-                        mct = Object.assign({}, mct.children[max]);
-                        turn = mct.turn.slice(0);
+                    let selected = this.selectNode(mct, path);
+                    mct = selected[0];
+                    path = selected[1];
+                    if (!mct) {
+                        break;
                     }
+                    var turn = mct.turn.slice(0);
 
                     // Expansion
                     var stones = 0;
@@ -346,7 +378,6 @@ class ComputerPlayer {
                             stones += 1;
                         }
                     }
-                
                     var moveList = []; 
                     if (stones < 3) {
                         for (let i=0; i<mct.board.length; i++) {
@@ -354,15 +385,12 @@ class ComputerPlayer {
                                 moveList.push(i);
                             }
                         }
-                        console.log(stones);
                         for (var move in moveList) {
                             let tempBoard = mct.board.slice(0);
-                            let state = {board: tempBoard, turn: opponent, visits: 1, wins: 0.1, children: []};
+                            let state = {board: tempBoard, turn: opponent, visits: 1, wins: 0.6, children: []};
                             state.board[moveList[move]] = this.settings[turn];
-                            //console.log(move);
                             mct.children.push(state);
                         }
-
                     }else if (stones == 3) {
                         for (let i=0; i<mct.board.length; i++) {
                             if (mct.board[i] == this.settings[turn]) {
@@ -371,7 +399,7 @@ class ComputerPlayer {
                         }
                         for (var move in moveList) {
                             let tempBoard = mct.board.slice(0);
-                            let state = {board: tempBoard, turn: opponent, visits: 1, wins: 0.1, children: []};
+                            let state = {board: tempBoard, turn: opponent, visits: 1, wins: 0.6, children: []};
                             state.board[moveList[move][1]] = this.settings[turn];
                             state.board[moveList[move][0]] = 0;
                             mct.children.push(state);
@@ -391,10 +419,11 @@ class ComputerPlayer {
                     let win = this.simulate(mct); 
 
                     // Backpropagation
-                    this.updateMct(this.mct, mct, path, win);
-                    console.log(this.mct);
+                    this.updateMct(this.mct, path, win);
+                    
                 
                 }
+                console.log(this.mct);
                 var max = 0;
                 for (let i=0; i<this.mct.children.length; i++) {
                     if (this.mct.children[i].wins/this.mct.children[i].visits >
@@ -403,7 +432,6 @@ class ComputerPlayer {
                     }
                 }
                 this.b.state = this.mct.children[max].board;
-                alert(this.mct.children[max].board);
                 this.b.winner = this.checkWin(this.b.state);
                 this.b.turn = 'human';
             }
