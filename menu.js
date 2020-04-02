@@ -280,7 +280,6 @@ class Menu{
         this.context.globalAlpha = 0.3;
         this.context.fillRect(0, 0, this.policyMenu_w, this.policyMenu_h);
         // policy menu boxes
-        console.log(this.policyMenu_box);
         for (let i = 0; i<this.policyMenu_box.length; i++) {
             if (this.settings.opPolicy == this.policyMenu_box[i].id) {
                 this.context.globalAlpha = 0.6;

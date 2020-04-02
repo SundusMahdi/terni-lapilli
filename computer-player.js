@@ -3,8 +3,8 @@ class ComputerPlayer {
         this.canvas = options.canvas;
         this.context = options.context;
         this.settings = options.settings;
-        this.settings.MctSim = 1;
-        this.settings.MctTimeLimit = 3000;
+        this.settings.mctSim = 100;
+        this.settings.mctTimeLimit = 3;
         this.b = options.b;
         this.size = options.size;
         this.image = options.image;
@@ -89,7 +89,6 @@ class ComputerPlayer {
                 }
                 break;
             case 3:
-                console.log("here");
                 if (state[0] == 0) {
                     list.push([3, 0]);
                 }
@@ -101,7 +100,6 @@ class ComputerPlayer {
                 }
                 break;
             case 4:
-                console.log("here");
                 if (state[0] == 0) {
                     list.push([4, 0]);
                 }
@@ -131,7 +129,6 @@ class ComputerPlayer {
                 }
                 break;
             case 5:
-                console.log("here");
                 if (state[2] == 0) {
                     list.push([5, 2]);
                 }
@@ -143,7 +140,6 @@ class ComputerPlayer {
                 }
                 break;
             case 6:
-                console.log("here");
                 if (state[3] == 0) {
                     list.push([6, 3]);
                 }
@@ -155,7 +151,6 @@ class ComputerPlayer {
                 }
                 break;
             case 7:
-                console.log("here");
                 if (state[6] == 0) {
                     list.push([7, 6]);
                 }
@@ -167,7 +162,6 @@ class ComputerPlayer {
                 }
                 break;
             case 8:
-                console.log("here");
                 if (state[5] == 0) {
                     list.push([8, 5]);
                 }
@@ -182,9 +176,9 @@ class ComputerPlayer {
     }
     
     simulate(mct) {
-        var turn = mct.turn;
-        var board = mct.board;
-        for (let i = 0; i < this.settings.MctSim; i++) {
+        var turn = mct.turn.slice(0);
+        var board = mct.board.slice(0);
+        for (let i = 0; i < this.settings.mctSim; i++) {
             let win = this.checkWin(board);
             if (win == 'bot') {
                 return 1;
@@ -194,7 +188,7 @@ class ComputerPlayer {
             var moveList = [];            
             if (turn == 'bot'){
                 var botStones = 0;
-                for (int in board){
+                for (var int in board){
                     if (int == this.settings.bot) {
                         botStones += 1;
                     }
@@ -263,14 +257,14 @@ class ComputerPlayer {
                 }
             }
         }
+        return 0;
     }
     
     updateMct(thisMct, mct, path, win) {
         if (path.length == 0) {
-            thisMct.children = mct.children;
-            thisMct.visits += 1;
-            thisMct.wins += win;
+            return 0;
         }else{
+            console.log('here');
             thisMct.visits += 1;
             thisMct.wins += win;
             let index = path.shift();
@@ -317,13 +311,11 @@ class ComputerPlayer {
                 
                 
             }else if (this.settings.opPolicy == "MCTS") {
-                if (this.settings.opPolicy_new){
-                    // board_representation = {board: '000000000', turn: 'bot', visits: 0, wins: 0, children: [{...},{...},{...}]}
-                    this.mct = {board: this.b.state, turn:'bot', visits: 1, wins: 0, children:[]};
-                    this.settings.opPolicy_new = false;
-                }
+                let board = this.b.state.slice(0);
+                let temp = this.b.turn.slice(0);
+                this.mct = {board: board, turn: temp, visits: 1, wins: 0, children:[]};
                 const time = Date.now();
-                while (Date.now() - time < this.settings.MctTimeLimit) {
+                while ((Date.now() - time) < this.settings.mctTimeLimit) {
                     // Selection
                     var mct = this.mct;
                     var path = [];
@@ -336,9 +328,9 @@ class ComputerPlayer {
                                 max = i;
                             }
                         }
-                        path.push(i);
-                        mct = mct.children[i];
-                        turn = mct.turn;
+                        path.push(max);
+                        mct = Object.assign({}, mct.children[max]);
+                        turn = mct.turn.slice(0);
                     }
 
                     // Expansion
@@ -350,10 +342,11 @@ class ComputerPlayer {
                         opponent = 'human';
                     }
                     for (var int in mct.board) {
-                        if (int == this.settings[turn]) {
+                        if (mct.board[int] == this.settings[turn]) {
                             stones += 1;
                         }
                     }
+                
                     var moveList = []; 
                     if (stones < 3) {
                         for (let i=0; i<mct.board.length; i++) {
@@ -361,11 +354,15 @@ class ComputerPlayer {
                                 moveList.push(i);
                             }
                         }
+                        console.log(stones);
                         for (var move in moveList) {
-                            let state = {board: mct.board, turn: opponent, visits: 1, wins: 0.1, children: []};
-                            state.board[move] = this.settings[turn];
+                            let tempBoard = mct.board.slice(0);
+                            let state = {board: tempBoard, turn: opponent, visits: 1, wins: 0.1, children: []};
+                            state.board[moveList[move]] = this.settings[turn];
+                            //console.log(move);
                             mct.children.push(state);
                         }
+
                     }else if (stones == 3) {
                         for (let i=0; i<mct.board.length; i++) {
                             if (mct.board[i] == this.settings[turn]) {
@@ -373,19 +370,42 @@ class ComputerPlayer {
                             }
                         }
                         for (var move in moveList) {
-                            let state = {board: mct.board, turn: opponent, visits: 1, wins: 0.1, children: []};
+                            let tempBoard = mct.board.slice(0);
+                            let state = {board: tempBoard, turn: opponent, visits: 1, wins: 0.1, children: []};
                             state.board[moveList[move][1]] = this.settings[turn];
                             state.board[moveList[move][0]] = 0;
                             mct.children.push(state);
                         }
                     }
-
+                
                     // Simulation 
+                    var max = 0;
+                    for (let i = 0; i < mct.children.length; i++) {
+                        if (mct.children[i].wins/mct.children[i].visits > 
+                            mct.children[max].wins/mct.children[max].visits) {
+                            max = i;
+                        }
+                    }
+                    path.push(max);
+                    mct = Object.assign({}, mct.children[max]);
                     let win = this.simulate(mct); 
 
                     // Backpropagation
                     this.updateMct(this.mct, mct, path, win);
+                    console.log(this.mct);
+                
                 }
+                var max = 0;
+                for (let i=0; i<this.mct.children.length; i++) {
+                    if (this.mct.children[i].wins/this.mct.children[i].visits >
+                        this.mct.children[max].wins/this.mct.children[max].visits) {
+                        max = i;
+                    }
+                }
+                this.b.state = this.mct.children[max].board;
+                alert(this.mct.children[max].board);
+                this.b.winner = this.checkWin(this.b.state);
+                this.b.turn = 'human';
             }
         }
     }

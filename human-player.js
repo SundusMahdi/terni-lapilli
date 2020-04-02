@@ -10,6 +10,7 @@ class HumanPlayer {
         this.clickedI = -1;
         this.mouseX = 0;
         this.mouseY = 0;
+        this.nextTurn = false;
         
         const game = this;
         this.canvas.addEventListener("mousedown", function(event) {
@@ -48,7 +49,6 @@ class HumanPlayer {
     findHint(intersection) {
         switch (intersection) {
             case 0:
-                console.log("here");
                 if (this.b.state[1] == 0) {
                     this.b.state[1] = this.settings.humanHint;
                 }
@@ -60,7 +60,6 @@ class HumanPlayer {
                 }
                 break;
             case 1:
-                console.log("here");
                 if (this.b.state[0] == 0) {
                     this.b.state[0] = this.settings.humanHint;
                 }
@@ -72,7 +71,6 @@ class HumanPlayer {
                 }
                 break;
             case 2:
-                console.log("here");
                 if (this.b.state[1] == 0) {
                     this.b.state[1] = this.settings.humanHint;
                 }
@@ -84,7 +82,6 @@ class HumanPlayer {
                 }
                 break;
             case 3:
-                console.log("here");
                 if (this.b.state[0] == 0) {
                     this.b.state[0] = this.settings.humanHint;
                 }
@@ -96,7 +93,6 @@ class HumanPlayer {
                 }
                 break;
             case 4:
-                console.log("here");
                 if (this.b.state[0] == 0) {
                     this.b.state[0] = this.settings.humanHint;
                 }
@@ -126,7 +122,6 @@ class HumanPlayer {
                 }
                 break;
             case 5:
-                console.log("here");
                 if (this.b.state[2] == 0) {
                     this.b.state[2] = this.settings.humanHint;
                 }
@@ -138,7 +133,6 @@ class HumanPlayer {
                 }
                 break;
             case 6:
-                console.log("here");
                 if (this.b.state[3] == 0) {
                     this.b.state[3] = this.settings.humanHint;
                 }
@@ -150,7 +144,6 @@ class HumanPlayer {
                 }
                 break;
             case 7:
-                console.log("here");
                 if (this.b.state[6] == 0) {
                     this.b.state[6] = this.settings.humanHint;
                 }
@@ -162,7 +155,6 @@ class HumanPlayer {
                 }
                 break;
             case 8:
-                console.log("here");
                 if (this.b.state[5] == 0) {
                     this.b.state[5] = this.settings.humanHint;
                 }
@@ -197,7 +189,7 @@ class HumanPlayer {
                             this.b.humanStones += 1;
                             this.mouseX, this.mouseY = 0;
                             this.checkWin();
-                            this.b.turn = 'bot';
+                            this.nextTurn = true;
                         }
                         // if there are 3 stones and a human stone is clicked clear old hints then show hints
                         else if (this.b.humanStones == 3 && this.b.state[i] == this.settings.human) {
@@ -214,7 +206,7 @@ class HumanPlayer {
                             this.clearHints();
                             this.mouseX, this.mouseY = 0;
                             this.checkWin();
-                            this.b.turn = 'bot';
+                            this.nextTurn = true;
                         }
                     }
                 }
@@ -223,6 +215,9 @@ class HumanPlayer {
     }
 
     render() {
-
+        if (this.nextTurn) {
+            this.b.turn = 'bot';
+            this.nextTurn = false;
+        }
     }
 }
