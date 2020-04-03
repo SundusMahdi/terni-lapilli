@@ -4,7 +4,7 @@ class ComputerPlayer {
         this.context = options.context;
         this.settings = options.settings;
         this.settings.mctSim = 100;
-        this.settings.mctSimDepth = 100;
+        this.settings.mctSimDepth = 50;
         this.settings.mctTimeLimit = 1000;
         this.b = options.b;
         this.size = options.size;
