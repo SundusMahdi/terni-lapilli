@@ -21,6 +21,7 @@ class Menu{
         this.policyMenu_box = [{id:'Random', x:0, y:0, w:0, h:0},
                                {id:'Minimax', x:0, y:0, w:0, h:0},
                                {id:'MCTS', x:0, y:0, w:0, h:0}];
+        this.policyMenu_box_mcts = [];
         this.longScreen = false;
         this.settings.menu = 'start';
         
@@ -55,7 +56,15 @@ class Menu{
                                         w:boxSide, h:boxSide},
                                        {id:'MCTS', x:30 + 2*boxSide, y:10+yOffset, 
                                         w:boxSide , h:boxSide}];
-
+                this.policyMenu_box_mcts = [{id: "100ms", val: 100, x:this.policyMenu_box[2].x + 10, 
+                                            y:this.policyMenu_box[2].y + yOffset*1.3, 
+                                            w:boxSide-20, h:boxSide/5},
+                                           {id: "1s", val: 1000, x:this.policyMenu_box[2].x + 10, 
+                                            y:this.policyMenu_box[2].y + yOffset*1.3 + boxSide/5 + 2, 
+                                            w:boxSide-20, h:boxSide/5},
+                                           {id: "10s", val: 10000, x:this.policyMenu_box[2].x + 10, 
+                                            y:this.policyMenu_box[2].y + yOffset*1.3 + boxSide/2.5 + 4, 
+                                            w:boxSide-20, h:boxSide/5}];
             }else{
                 this.policyMenu_h = 0;
                 this.policyMenu_pullTab = {x: 0, y: 0, w: this.canvas.width, h: 30};
@@ -85,6 +94,15 @@ class Menu{
                                         w:boxSide, h:boxSide},
                                        {id:'MCTS', x:10, y:30 + 2*boxSide + yOffset, 
                                         w:boxSide, h:boxSide}];
+                this.policyMenu_box_mcts = [{id: "100ms", val: 100, x:this.policyMenu_box[2].x + 10, 
+                                            y:this.policyMenu_box[2].y + yOffset/1.5, 
+                                            w:boxSide-20, h:boxSide/5},
+                                            {id: "1s", val: 1000, x:this.policyMenu_box[2].x + 10, 
+                                            y:this.policyMenu_box[2].y + yOffset/1.5 + boxSide/5 + 3, 
+                                            w:boxSide-20, h:boxSide/5},
+                                            {id: "10s", val: 10000, x:this.policyMenu_box[2].x + 10, 
+                                            y:this.policyMenu_box[2].y + yOffset/1.5 + boxSide/2.5 + 6, 
+                                            w:boxSide-20, h:boxSide/5}];
             }else{
                 this.policyMenu_w = 0;
                 this.policyMenu_pullTab = {x: 0, y: 0, w: 30, h: this.canvas.height};
@@ -216,6 +234,13 @@ class Menu{
                 }
             }
         }
+        if (this.settings.opPolicy == "MCTS") {
+            for (let i = 0; i<this.policyMenu_box_mcts.length; i++) {
+                if (this.btnPressed(this.policyMenu_box_mcts[i])) {
+                    this.settings.mctTimeLimit = this.policyMenu_box_mcts[i].val;
+                }
+            }
+        }
     }
     
     render() {
@@ -280,9 +305,9 @@ class Menu{
         this.context.globalAlpha = 0.3;
         this.context.fillRect(0, 0, this.policyMenu_w, this.policyMenu_h);
         // policy menu boxes
-        for (let i = 0; i<this.policyMenu_box.length; i++) {
+        for (let i = 0; i<this.policyMenu_box.length; i++) {// TODO: only triger this block if policyMenu_active
             if (this.settings.opPolicy == this.policyMenu_box[i].id) {
-                this.context.globalAlpha = 0.6;
+                this.context.globalAlpha = 0.5;
             }
             this.context.fillRect(this.policyMenu_box[i].x, this.policyMenu_box[i].y,
                                   this.policyMenu_box[i].w, this.policyMenu_box[i].h);
@@ -296,6 +321,26 @@ class Menu{
             }
             this.context.globalAlpha = 0.3;
         }
+        // mcts time limit boxes
+        if (this.policyMenu_active) {
+            for (let i = 0; i<this.policyMenu_box_mcts.length; i++) {
+                if (this.settings.mctTimeLimit == this.policyMenu_box_mcts[i].val) {
+                    this.context.globalAlpha = 0.5;
+                }
+                this.context.fillRect(this.policyMenu_box_mcts[i].x, this.policyMenu_box_mcts[i].y,
+                                      this.policyMenu_box_mcts[i].w, this.policyMenu_box_mcts[i].h);
+                this.context.globalAlpha = 1;
+                let font = (Math.min(this.windowH, this.windowW)/210 * 14).toString();
+                this.context.font = font+"px arial";
+                this.context.fillStyle = "#ffffff";
+                this.context.fillText(this.policyMenu_box_mcts[i].id, 
+                                      this.policyMenu_box_mcts[i].x+this.windowW/40, 
+                                      this.policyMenu_box_mcts[i].y+this.windowH/13);
+                this.context.fillStyle = "#000000";
+                this.context.globalAlpha = 0.3;
+            }
+        }
+        
         // policy menu pulltab
         this.context.globalAlpha = 0.5;
         this.context.fillRect(this.policyMenu_pullTab.x, this.policyMenu_pullTab.y, 
