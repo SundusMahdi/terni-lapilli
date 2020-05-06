@@ -19,8 +19,9 @@ class Menu{
         this.policyMenu_h = 0;
         this.policyMenu_pullTab = {x: 0, y: 0};
         this.policyMenu_box = [{id:'Random', x:0, y:0, w:0, h:0},
-                               {id:'Minimax', x:0, y:0, w:0, h:0},
-                               {id:'MCTS', x:0, y:0, w:0, h:0}];
+                               {id:'MCTS', x:0, y:0, w:0, h:0}
+//                               ,{id:'Minimax', x:0, y:0, w:0, h:0}
+                              ];
         this.policyMenu_box_mcts = [];
         this.longScreen = false;
         this.settings.menu = 'start';
@@ -52,18 +53,19 @@ class Menu{
                 let boxSide = this.policyMenu_h - 20 - yOffset;
                 this.policyMenu_box = [{id:'Random', x:10, y:10+yOffset, 
                                         w:boxSide, h:boxSide},
-                                       {id:'Minimax', x:20 + boxSide, y:10+yOffset, 
-                                        w:boxSide, h:boxSide},
-                                       {id:'MCTS', x:30 + 2*boxSide, y:10+yOffset, 
-                                        w:boxSide , h:boxSide}];
-                this.policyMenu_box_mcts = [{id: "100ms", val: 100, x:this.policyMenu_box[2].x + 10, 
-                                            y:this.policyMenu_box[2].y + yOffset*1.3, 
+                                       {id:'MCTS', x:20 + boxSide, y:10+yOffset, 
+                                        w:boxSide, h:boxSide}
+//                                       ,{id:'Minimax', x:30 + 2*boxSide, y:10+yOffset, 
+//                                        w:boxSide , h:boxSide}
+                                      ];
+                this.policyMenu_box_mcts = [{id: "100ms", val: 100, x:this.policyMenu_box[1].x + 10, 
+                                            y:this.policyMenu_box[1].y + yOffset*1.3, 
                                             w:boxSide-20, h:boxSide/5},
-                                           {id: "1s", val: 1000, x:this.policyMenu_box[2].x + 10, 
-                                            y:this.policyMenu_box[2].y + yOffset*1.3 + boxSide/5 + 2, 
+                                           {id: "1s", val: 1000, x:this.policyMenu_box[1].x + 10, 
+                                            y:this.policyMenu_box[1].y + yOffset*1.3 + boxSide/5 + 2, 
                                             w:boxSide-20, h:boxSide/5},
-                                           {id: "10s", val: 10000, x:this.policyMenu_box[2].x + 10, 
-                                            y:this.policyMenu_box[2].y + yOffset*1.3 + boxSide/2.5 + 4, 
+                                           {id: "10s", val: 10000, x:this.policyMenu_box[1].x + 10, 
+                                            y:this.policyMenu_box[1].y + yOffset*1.3 + boxSide/2.5 + 4, 
                                             w:boxSide-20, h:boxSide/5}];
             }else{
                 this.policyMenu_h = 0;
@@ -71,10 +73,11 @@ class Menu{
                 let boxSide = this.policyMenu_h - 20;
                 this.policyMenu_box = [{id:'Random', x:10, y:10, 
                                         w:0, h:0},
-                                       {id:'Minimax', x:20 + boxSide, y:10, 
-                                        w:0, h:0},
-                                       {id:'MCTS', x:30 + 2*boxSide, y:10, 
-                                        w:0, h:0}];
+                                       {id:'MCTS', x:20 + boxSide, y:10, 
+                                        w:0, h:0}
+//                                       ,{id:'Minimax', x:30 + 2*boxSide, y:10, 
+//                                        w:0, h:0}
+                                      ];
             }
         }else{
             this.windowW = this.canvas.height*this.size;
@@ -90,18 +93,19 @@ class Menu{
                 let yOffset = (Math.min(this.windowH, this.windowW)/210 * 40);
                 this.policyMenu_box = [{id:'Random', x:10, y:10 + yOffset, 
                                         w:boxSide, h:boxSide},
-                                       {id:'Minimax', x:10, y:20 + boxSide + yOffset, 
-                                        w:boxSide, h:boxSide},
-                                       {id:'MCTS', x:10, y:30 + 2*boxSide + yOffset, 
-                                        w:boxSide, h:boxSide}];
-                this.policyMenu_box_mcts = [{id: "100ms", val: 100, x:this.policyMenu_box[2].x + 10, 
-                                            y:this.policyMenu_box[2].y + yOffset/1.5, 
+                                       {id:'MCTS', x:10, y:20 + boxSide + yOffset, 
+                                        w:boxSide, h:boxSide}
+//                                       ,{id:'Minimax', x:10, y:30 + 2*boxSide + yOffset, 
+//                                        w:boxSide, h:boxSide}
+                                      ];
+                this.policyMenu_box_mcts = [{id: "100ms", val: 100, x:this.policyMenu_box[1].x + 10, 
+                                            y:this.policyMenu_box[1].y + yOffset/1.5, 
                                             w:boxSide-20, h:boxSide/5},
-                                            {id: "1s", val: 1000, x:this.policyMenu_box[2].x + 10, 
-                                            y:this.policyMenu_box[2].y + yOffset/1.5 + boxSide/5 + 3, 
+                                            {id: "1s", val: 1000, x:this.policyMenu_box[1].x + 10, 
+                                            y:this.policyMenu_box[1].y + yOffset/1.5 + boxSide/5 + 3, 
                                             w:boxSide-20, h:boxSide/5},
-                                            {id: "10s", val: 10000, x:this.policyMenu_box[2].x + 10, 
-                                            y:this.policyMenu_box[2].y + yOffset/1.5 + boxSide/2.5 + 6, 
+                                            {id: "10s", val: 10000, x:this.policyMenu_box[1].x + 10, 
+                                            y:this.policyMenu_box[1].y + yOffset/1.5 + boxSide/2.5 + 6, 
                                             w:boxSide-20, h:boxSide/5}];
             }else{
                 this.policyMenu_w = 0;
@@ -109,10 +113,11 @@ class Menu{
                 let boxSide = this.policyMenu_w - 20;
                 this.policyMenu_box = [{id:'Random', x:10, y:10, 
                                         w:0, h:0},
-                                       {id:'Minimax', x:10, y:20 + boxSide, 
-                                        w:0, h:0},
-                                       {id:'MCTS', x:10, y:30 + 2*boxSide, 
-                                        w:0, h:0}];
+                                       {id:'MCTS', x:10, y:20 + boxSide, 
+                                        w:0, h:0}
+//                                       ,{id:'Minimax', x:10, y:30 + 2*boxSide, 
+//                                        w:0, h:0}
+                                      ];
             }
         }
     }
